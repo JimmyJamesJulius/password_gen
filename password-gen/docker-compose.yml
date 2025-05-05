@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    networks:
+      - appnet
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    user: root                            # so it can bind Docker socket
+    ports:
+      - "8080:8080"                       # web UI
+      - "50000:50000"                     # agent port
+    volumes:
+      - jenkins_home:/var/jenkins_home    # persists Jenkins data
+      - /var/run/docker.sock:/var/run/docker.sock  # allow Jenkins to run Docker
+    networks:
+      - appnet
+
+networks:
+  appnet:
+    driver: bridge
+
+volumes:
+  jenkins_home:
+

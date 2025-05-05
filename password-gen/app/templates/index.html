@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Password Generator</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>Secure Password Generator</h1>
+    <form id="pwdForm">
+      <label for="length">Length: <span id="lenValue">12</span></label>
+      <input type="range" id="length" name="length" min="4" max="64" value="12">
+      <button type="submit">Generate</button>
+    </form>
+    <div class="result">
+      <input type="text" id="password" readonly placeholder="Your password will appear here">
+      <button id="copyBtn">Copy</button>
+    </div>
+  </div>
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
+

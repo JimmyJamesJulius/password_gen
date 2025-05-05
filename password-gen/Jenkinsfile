@@ -1,0 +1,63 @@
+pipeline {
+  agent any
+
+  environment {
+    IMAGE = "your-dockerhub-username/password-gen:${env.BUILD_NUMBER}"
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
+    }
+
+    stage('Lint & Test') {
+      steps {
+        sh 'pip install --quiet -r app/requirements.txt'
+        // (Add pytest or flake8 here if you have tests)
+      }
+    }
+
+    stage('Build Docker Image') {
+      steps {
+        script {
+          docker.build(IMAGE)
+        }
+      }
+    }
+
+    stage('Push to Registry') {
+      when {
+        branch 'main'
+      }
+      steps {
+        script {
+          docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
+            docker.image(IMAGE).push()
+          }
+        }
+      }
+    }
+
+    stage('Deploy') {
+      when {
+        branch 'main'
+      }
+      steps {
+        sh '''
+          docker-compose down
+          docker-compose pull
+          docker-compose up -d
+        '''
+      }
+    }
+  }
+
+  post {
+    always {
+      cleanWs()
+    }
+  }
+}
+
